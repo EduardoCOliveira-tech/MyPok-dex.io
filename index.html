@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyPokédex Ultimate (Version Fix)</title>
+    <title>MyPokédex</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e3350d%22/><path d=%22M5,50 A45,45 0 0,0 95,50 Z%22 fill=%22white%22/><rect x=%225%22 y=%2245%22 width=%2290%22 height=%2210%22 fill=%22%23222%22/><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22none%22 stroke=%22%23222%22 stroke-width=%225%22/><circle cx=%2250%22 cy=%2250%22 r=%2215%22 fill=%22white%22 stroke=%22%23222%22 stroke-width=%225%22/><circle cx=%2250%22 cy=%2250%22 r=%226%22 fill=%22white%22 stroke=%22%23ccc%22 stroke-width=%221%22/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         :root {
             --primary: #e3350d; --bg-dark: #121214; --bg-card: #202024;
             --text-main: #e1e1e6; --text-sec: #a8a8b3;
-            --accent: #04d361; --info: #3b82f6; --danger: #ef4444; --teleport: #00bcd4; --tm-color: #f5a623;
+            --accent: #04d361; --info: #3b82f6; --danger: #ef4444; --teleport: #00bcd4; --tm-color: #f5a623; --edit: #f39c12;
             --border: rgba(255, 255, 255, 0.1);
         }
         * { box-sizing: border-box; }
@@ -40,7 +40,10 @@
         .map-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; font-size: 1.1rem; }
         .btn-save { background: var(--accent); color: #000; }
         .btn-new { background: var(--info); color: white; }
+        .btn-edit { background: var(--edit); color: white; }
         .btn-del { background: var(--danger); color: white; }
+        .map-btn:hover { transform: scale(1.1); filter: brightness(1.1); }
+
         .stats { margin-left: auto; font-size: 0.9rem; font-weight: 600; color: var(--primary); background: rgba(227, 53, 13, 0.1); padding: 5px 12px; border-radius: 20px; }
 
         .view { display: none; flex-grow: 1; height: 100%; position: relative; overflow: hidden; }
@@ -95,6 +98,7 @@
         #map-container { flex-grow: 1; background: #0f0f10; position: relative; overflow: hidden; cursor: crosshair; background-image: radial-gradient(#222 1px, transparent 1px); background-size: 24px 24px; }
         .toolbar { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(32, 32, 36, 0.9); padding: 10px 20px; border-radius: 50px; display: flex; gap: 15px; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: 1px solid var(--border); }
         .tool { width: 45px; height: 45px; border: none; background: transparent; color: #bbb; border-radius: 50%; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .tool:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-2px); }
         .tool.active { background: var(--primary); color: white; box-shadow: 0 0 20px rgba(227, 53, 13, 0.4); }
         
         #loading { position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 25px 50px; border-radius: 16px; z-index: 200; font-weight: 600; border: 1px solid var(--border); }
@@ -164,8 +168,7 @@
 </section>
 
 <script>
-    // ================= CONFIGURAÇÃO =================
-    // ADICIONEI O CAMPO 'versionGroup' para filtrar corretamente
+    // ================= DADOS E CONFIGURAÇÃO =================
     const regions = [
         { id: 'kanto_rb', name: 'Kanto (FR/LG)', api: 2, type: 'reg', versionGroup: 'firered-leafgreen' },
         { id: 'johto_gs', name: 'Johto (HG/SS)', api: 3, type: 'reg', versionGroup: 'heartgold-soulsilver' },
@@ -177,7 +180,6 @@
         { id: 'galar', name: 'Galar (Sw/Sh)', api: 27, type: 'reg', versionGroup: 'sword-shield' },
         { id: 'paldea', name: 'Paldea (Sc/Vi)', api: 31, type: 'reg', versionGroup: 'scarlet-violet' },
         
-        // National Dex usa o fallback de versão mais recente compatível
         { id: 'nat_gen1', name: 'National Dex (Gen 1)', api: 1, type: 'nat', limit: 151, relatedReg: 'kanto_rb', versionGroup: 'firered-leafgreen' },
         { id: 'nat_gen2', name: 'National Dex (Gen 2)', api: 1, type: 'nat', limit: 251, relatedReg: 'johto_gs', versionGroup: 'heartgold-soulsilver' },
         { id: 'nat_gen3', name: 'National Dex (Gen 3)', api: 1, type: 'nat', limit: 386, relatedReg: 'hoenn_rs', versionGroup: 'emerald' },
@@ -342,7 +344,7 @@
         document.getElementById('stats').innerText = `${c} / ${t} (${p}%)`;
     }
 
-    // ================= DETALHES COMPLETOS (FILTRO VERSION-SPECIFIC) =================
+    // ================= DETALHES COMPLETOS (CORRIGIDO) =================
     const typeColors = { normal:'#A8A77A', fire:'#EE8130', water:'#6390F0', electric:'#F7D02C', grass:'#7AC74C', ice:'#96D9D6', fighting:'#C22E28', poison:'#A33EA1', ground:'#E2BF65', flying:'#A98FF3', psychic:'#F95587', bug:'#A6B91A', rock:'#B6A136', ghost:'#735797', dragon:'#6F35FC', dark:'#705746', steel:'#B7B7CE', fairy:'#D685AD' };
 
     async function openPokemonDetails(id) {
@@ -359,97 +361,126 @@
             const evoRes = await fetch(speciesData.evolution_chain.url);
             const evoData = await evoRes.json();
 
-            // Identifica a versão atual do jogo selecionado
+            // Identifica a versão atual do jogo selecionado no filtro
             const currentConfig = regions.find(r => r.id === currentRegId);
             const targetVersion = currentConfig ? currentConfig.versionGroup : null;
 
+            // Busca Evolução
             const evoCap = getEvolutionLevel(evoData.chain, data.name) || 100;
             const evoText = evoCap === 100 ? "Forma Final" : `Evolui no lvl ${evoCap}`;
 
             let typesHtml = data.types.map(t => `<span class="type-badge" style="background:${typeColors[t.type.name] || '#777'}">${t.type.name}</span>`).join('');
 
-            // STATS
+            // STATS VISUAIS
             let statsHtml = data.stats.map(s => {
                 const val = s.base_stat;
                 const width = Math.min(100, (val / 255) * 100); 
-                return `<div class="stat-row"><span class="stat-label">${s.stat.name.replace('special-','sp.')}</span><span class="stat-val">${val}</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${width}%"></div></div></div>`;
+                return `
+                    <div class="stat-row">
+                        <span class="stat-label">${s.stat.name.replace('special-','sp.')}</span>
+                        <span class="stat-val">${val}</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${width}%"></div></div>
+                    </div>
+                `;
             }).join('');
 
-            // --- LÓGICA DE FILTRAGEM RIGOROSA ---
-            // 1. Filtrar apenas moves que existem na versão selecionada
-            // 2. Filtrar Level Up <= Cap
+            // === LÓGICA DE FILTRAGEM RIGOROSA DE ATAQUES === //
+            // Se o jogo é FireRed, ignoramos moves de Scarlet/Violet.
             
-            const validMoves = data.moves.filter(m => {
-                 // Procura detalhe da versão específica
-                 return m.version_group_details.some(v => v.version_group.name === targetVersion);
+            // 1. Filtra moves que existem na versão alvo
+            const versionMoves = data.moves.filter(m => {
+                // Se a região é 'nat' (National Dex), usa a versão relacionada (ex: firered)
+                // Se não achar versão especifica, usa fallback
+                if (!targetVersion) return true; 
+                return m.version_group_details.some(v => v.version_group.name === targetVersion);
             });
+            
+            // Se não achou moves na versão (ex: pokemon novo em jogo velho), usa lista geral
+            const movesSource = versionMoves.length > 0 ? versionMoves : data.moves;
+            const versionToUse = versionMoves.length > 0 ? targetVersion : null;
 
-            // Separa os ataques naturais (Level Up nessa versão específica)
-            let naturalMoves = validMoves.map(m => {
-                const detail = m.version_group_details.find(v => v.version_group.name === targetVersion);
+            // 2. Separa Naturais (Level Up <= Cap)
+            let naturalMoves = movesSource.map(m => {
+                // Pega detalhe da versão certa ou o ultimo disponível
+                const detail = versionToUse 
+                    ? m.version_group_details.find(v => v.version_group.name === versionToUse)
+                    : m.version_group_details[m.version_group_details.length-1];
+                
                 return { name: m.move.name, method: detail.move_learn_method.name, lvl: detail.level_learned_at };
-            }).filter(m => m.method === 'level-up' && m.lvl <= evoCap && m.lvl > 1)
-              .sort((a,b) => a.lvl - b.lvl)
-              .slice(-6); // Top 6 últimos aprendidos
+            })
+            .filter(m => m.method === 'level-up' && m.lvl <= evoCap && m.lvl > 1) // Filtra nivel
+            .sort((a,b) => a.lvl - b.lvl) // Ordena por nível
+            .slice(-6); // Pega os 6 últimos aprendidos
 
-            // Separa TMs/HMs (Machine nessa versão)
-            let machineMoves = validMoves.map(m => {
-                const detail = m.version_group_details.find(v => v.version_group.name === targetVersion);
+            // 3. Separa TMs/HMs (Machine)
+            let machineMoves = movesSource.map(m => {
+                const detail = versionToUse 
+                    ? m.version_group_details.find(v => v.version_group.name === versionToUse)
+                    : m.version_group_details[m.version_group_details.length-1];
                 return { name: m.move.name, method: detail.move_learn_method.name };
             }).filter(m => m.method === 'machine');
 
-            // --- BUILD SUGGESTION ---
+
+            // === ALGORITMO DE BUILD (MOVESET) === //
             let potentialMoves = [];
             
-            // 1. Adiciona STABs
+            // Adiciona STABs (Prioriza Natural, depois TM)
             data.types.forEach(t => {
                 const bestMoves = strongMoves[t.type.name] || [];
-                // Prioriza natural, depois TM
-                const availableStabs = naturalMoves.filter(m => bestMoves.includes(m.name)).map(m => ({name: m.name, type: 'stab'}));
-                const availableTms = machineMoves.filter(m => bestMoves.includes(m.name)).map(m => ({name: m.name, type: 'stab'}));
-                potentialMoves.push(...availableStabs, ...availableTms);
+                const availStabs = [
+                    ...naturalMoves.filter(m => bestMoves.includes(m.name)),
+                    ...machineMoves.filter(m => bestMoves.includes(m.name))
+                ].map(m => ({name: m.name, type: 'stab'}));
+                potentialMoves.push(...availStabs);
             });
 
-            // 2. Adiciona Cobertura
+            // Adiciona Cobertura
             ['normal', 'ground', 'rock', 'flying', 'fighting', 'ice', 'electric'].forEach(ct => {
                 if(!data.types.some(t => t.type.name === ct)) {
                     const covers = strongMoves[ct] || [];
-                    const availableCovers = machineMoves.filter(m => covers.includes(m.name)).map(m => ({name: m.name, type: 'cover'}));
-                    potentialMoves.push(...availableCovers);
+                    const availCovers = machineMoves.filter(m => covers.includes(m.name)).map(m => ({name: m.name, type: 'cover'}));
+                    potentialMoves.push(...availCovers);
                 }
             });
 
             // Remove duplicatas
             potentialMoves = potentialMoves.filter((v,i,a)=>a.findIndex(t=>(t.name === v.name))===i);
 
-            // Seleciona 4
+            // Seleciona 4 Slots
             let finalBuild = potentialMoves.filter(m => m.type === 'stab').slice(0, 2);
             finalBuild.push(...potentialMoves.filter(m => m.type === 'cover').slice(0, 4 - finalBuild.length));
             
-            // Preenche buracos com os ultimos naturais
+            // Preenche buracos com os ultimos naturais fortes
             if(finalBuild.length < 4) {
-                const fillers = naturalMoves.sort((a,b) => b.lvl - a.lvl).slice(0, 4 - finalBuild.length).map(m => ({name: m.name, type: 'stab'}));
-                // Evita duplicar o que ja ta na build
+                const fillers = naturalMoves.sort((a,b) => b.lvl - a.lvl)
+                    .slice(0, 4 - finalBuild.length)
+                    .map(m => ({name: m.name, type: 'stab'}));
+                
                 fillers.forEach(f => {
                     if(!finalBuild.some(fb => fb.name === f.name)) finalBuild.push(f);
                 });
             }
 
+            // HTML GEN
             let movesetHtml = finalBuild.map(m => `<div class="build-slot ${m.type}">${m.name.replace(/-/g, ' ')}</div>`).join('');
             let naturalHtml = naturalMoves.map(m => `<span class="move-tag natural">${m.name.replace(/-/g, ' ')} <span class="level-info">Lv.${m.lvl}</span></span>`).join('');
             
-            // TMs fortes apenas para exibição na lista
-            let displayTms = machineMoves.filter(m => {
-                return Object.values(strongMoves).flat().includes(m.name);
-            }).slice(0,8).map(m => `<span class="move-tag tm">${m.name.replace(/-/g, ' ')} <span class="level-info">TM</span></span>`).join('');
+            // Mostra alguns TMs úteis
+            let displayTms = machineMoves.filter(m => Object.values(strongMoves).flat().includes(m.name))
+                .slice(0, 8)
+                .map(m => `<span class="move-tag tm">${m.name.replace(/-/g, ' ')} <span class="level-info">TM</span></span>`).join('');
 
             // Natureza
             const stats = {}; data.stats.forEach(s => stats[s.stat.name] = s.base_stat);
             let isPhysical = stats.attack >= stats['special-attack'];
             let natureText = "Neutro";
             if (stats.speed >= 100) natureText = isPhysical ? "Jolly (+Spd -SpA)" : "Timid (+Spd -Atk)";
-            else if (stats.speed < 50 && (stats.defense > 90 || stats['special-defense'] > 90)) natureText = "Impish / Bold";
-            else natureText = isPhysical ? "Adamant (+Atk -SpA)" : "Modest (+SpA -Atk)";
+            else if (stats.speed < 50 && (stats.defense > 90 || stats['special-defense'] > 90)) {
+                if(stats.defense > stats['special-defense']) natureText = isPhysical ? "Impish (+Def -SpA)" : "Bold (+Def -Atk)";
+                else natureText = isPhysical ? "Careful (+SpD -SpA)" : "Calm (+SpD -Atk)";
+            } else {
+                natureText = isPhysical ? "Adamant (+Atk -SpA)" : "Modest (+SpA -Atk)";
+            }
 
             const notes = db.notes[id] || "";
 
@@ -464,11 +495,11 @@
                 <div style="margin-bottom:15px;">${statsHtml}</div>
                 <div class="specs-box" style="margin-top:0;">
                     <span class="specs-title">🏆 Build Recomendada</span>
-                    <div class="build-grid">${movesetHtml}</div>
+                    <div class="build-grid">${movesetHtml || '<span style="color:#777; font-size:0.8rem;">Sem dados suficientes.</span>'}</div>
                 </div>
                 <div class="specs-box">
                     <span class="specs-title" style="color:#4caf50;">🍃 Naturais (Até lvl ${evoCap})</span>
-                    <div class="move-grid">${naturalHtml}</div>
+                    <div class="move-grid">${naturalHtml || '<span style="color:#777; font-size:0.8rem;">Iniciais básicos.</span>'}</div>
                     <div style="height:5px;"></div>
                     <span class="specs-title" style="color:var(--tm-color);">💿 TMs Disponíveis</span>
                     <div class="move-grid">${displayTms || '<span style="color:#777; font-size:0.8rem;">Nenhum relevante.</span>'}</div>
@@ -476,7 +507,7 @@
                 <div class="specs-box">
                     <span class="specs-title">⚡ Sugestão de Treino</span>
                     <p style="margin:5px 0; font-size:0.9rem;"><strong>Natureza:</strong> ${natureText}</p>
-                    <p style="margin:5px 0; font-size:0.9rem;"><strong>Foco:</strong> ${stats.speed >= 80 ? 'Speed' : 'HP'} + ${isPhysical ? 'Atk' : 'Sp.Atk'}</p>
+                    <p style="margin:5px 0; font-size:0.9rem;"><strong>Foco (EVs):</strong> ${stats.speed >= 80 ? 'Speed' : 'HP'} + ${isPhysical ? 'Atk' : 'Sp.Atk'}</p>
                 </div>
                 <div class="specs-box">
                     <span class="specs-title">📝 Anotações</span>
@@ -484,7 +515,7 @@
                     <button class="btn" style="width:100%; margin-top:5px; background:var(--accent);" onclick="saveNote(${id})">Salvar</button>
                 </div>
             `;
-        } catch (err) { console.error(err); body.innerHTML = '<p>Erro ao carregar.</p>'; }
+        } catch (err) { console.error(err); body.innerHTML = '<p>Erro ao carregar dados. Verifique a internet.</p>'; }
     }
 
     function getEvolutionLevel(chain, currentName) {
