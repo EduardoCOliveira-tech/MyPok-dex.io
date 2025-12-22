@@ -171,6 +171,7 @@
 </section>
 
 <script>
+    // ================= DADOS E CONFIGURAÇÃO =================
     const regions = [
         { id: 'kanto_rb', name: 'Kanto (FR/LG)', api: 2, type: 'reg', versionGroup: 'firered-leafgreen' },
         { id: 'johto_gs', name: 'Johto (HG/SS)', api: 3, type: 'reg', versionGroup: 'heartgold-soulsilver' },
@@ -362,53 +363,70 @@
             const evoRes = await fetch(speciesData.evolution_chain.url);
             const evoData = await evoRes.json();
 
+            // Configuração da Região
             const currentConfig = regions.find(r => r.id === currentRegId);
             const targetVersion = currentConfig ? currentConfig.versionGroup : null;
 
+            // Evolução
             const evoCap = getEvolutionLevel(evoData.chain, data.name) || 100;
             const evoText = evoCap === 100 ? "Forma Final" : `Evolui no lvl ${evoCap}`;
 
+            // Tipos
             let typesHtml = data.types.map(t => `<span class="type-badge" style="background:${typeColors[t.type.name] || '#777'}">${t.type.name}</span>`).join('');
 
+            // Stats
             let statsHtml = data.stats.map(s => {
                 const val = s.base_stat;
                 const width = Math.min(100, (val / 255) * 100); 
                 return `<div class="stat-row"><span class="stat-label">${s.stat.name.replace('special-','sp.')}</span><span class="stat-val">${val}</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${width}%"></div></div></div>`;
             }).join('');
 
-            // CRASH GUARD: Se não houver moves na versão, usa todos
-            const versionMoves = data.moves.filter(m => targetVersion ? m.version_group_details.some(v => v.version_group.name === targetVersion) : true);
-            const movesSource = versionMoves.length > 0 ? versionMoves : data.moves;
-            const versionToUse = versionMoves.length > 0 ? targetVersion : null;
+            // --- LÓGICA DE MOVIMENTOS ---
+            // Se o jogo é antigo e o pokemon é novo, ou vice-versa, usamos fallback
+            let moveSet = data.moves;
+            let useVersion = null;
 
-            // Filtro Natural Seguro
-            let naturalMoves = movesSource.map(m => {
-                const detail = versionToUse 
-                    ? m.version_group_details.find(v => v.version_group.name === versionToUse)
-                    : m.version_group_details[m.version_group_details.length-1];
+            // Tenta encontrar movimentos da versão especifica
+            if (targetVersion) {
+                const specific = data.moves.filter(m => m.version_group_details.some(v => v.version_group.name === targetVersion));
+                if (specific.length > 0) {
+                    moveSet = specific;
+                    useVersion = targetVersion;
+                }
+            }
+
+            // Filtro Natural
+            let naturalMoves = moveSet.map(m => {
+                // Pega o detalhe da versão escolhida ou o ultimo disponivel
+                let details = m.version_group_details;
+                if (useVersion) details = details.filter(d => d.version_group.name === useVersion);
+                
+                // Pega o ultimo registro válido (geralmente o nivel mais alto ou aprendizado mais recente)
+                const detail = details.length > 0 ? details[details.length - 1] : null;
                 
                 if (!detail) return null;
                 return { name: m.move.name, method: detail.move_learn_method.name, lvl: detail.level_learned_at };
             })
-            .filter(m => m && m.method === 'level-up' && m.lvl <= evoCap && m.lvl > 1) 
+            .filter(m => m && m.method === 'level-up' && m.lvl <= evoCap && m.lvl > 1)
             .sort((a,b) => a.lvl - b.lvl)
             .slice(-6);
 
-            // Filtro Machine Seguro
-            let machineMoves = movesSource.map(m => {
-                const detail = versionToUse 
-                    ? m.version_group_details.find(v => v.version_group.name === versionToUse)
-                    : m.version_group_details[m.version_group_details.length-1];
+            // Filtro TMs
+            let machineMoves = moveSet.map(m => {
+                let details = m.version_group_details;
+                if (useVersion) details = details.filter(d => d.version_group.name === useVersion);
+                const detail = details.length > 0 ? details[0] : null;
+                
                 if (!detail) return null;
                 return { name: m.move.name, method: detail.move_learn_method.name };
             }).filter(m => m && m.method === 'machine');
 
-            // Build Logic
+            // --- BUILD SUGGESTION ---
             let potentialMoves = [];
             data.types.forEach(t => {
-                const bestMoves = strongMoves[t.type.name] || [];
-                potentialMoves.push(...naturalMoves.filter(m => bestMoves.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
-                potentialMoves.push(...machineMoves.filter(m => bestMoves.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
+                const best = strongMoves[t.type.name] || [];
+                potentialMoves.push(...naturalMoves.filter(m => best.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
+                potentialMoves.push(...machineMoves.filter(m => best.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
             });
 
             ['normal', 'ground', 'rock', 'flying', 'fighting', 'ice', 'electric'].forEach(ct => {
@@ -418,14 +436,20 @@
                 }
             });
 
+            // Remove duplicatas
             potentialMoves = potentialMoves.filter((v,i,a)=>a.findIndex(t=>(t.name === v.name))===i);
-            
+
+            // Build Final (Top 4)
             let finalBuild = potentialMoves.filter(m => m.type === 'stab').slice(0, 2);
             finalBuild.push(...potentialMoves.filter(m => m.type === 'cover').slice(0, 4 - finalBuild.length));
             
+            // Preenche se faltar (Corrigido para evitar erro de slice negativo)
             if(finalBuild.length < 4) {
-                const fillers = naturalMoves.sort((a,b) => b.lvl - a.lvl).slice(0, 4 - finalBuild.length).map(m => ({name: m.name, type: 'stab'}));
-                fillers.forEach(f => { if(!finalBuild.some(fb => fb.name === f.name)) finalBuild.push(f); });
+                const slotsNeeded = 4 - finalBuild.length;
+                const fillers = naturalMoves.sort((a,b) => b.lvl - a.lvl).slice(0, slotsNeeded).map(m => ({name: m.name, type: 'stab'}));
+                fillers.forEach(f => {
+                    if(!finalBuild.some(fb => fb.name === f.name)) finalBuild.push(f);
+                });
             }
 
             let movesetHtml = finalBuild.map(m => `<div class="build-slot ${m.type}">${m.name.replace(/-/g, ' ')}</div>`).join('');
@@ -461,7 +485,7 @@
                 <div class="specs-box">
                     <span class="specs-title">⚡ Sugestão de Treino</span>
                     <p style="margin:5px 0; font-size:0.9rem;"><strong>Natureza:</strong> ${natureText}</p>
-                    <p style="margin:5px 0; font-size:0.9rem;"><strong>Foco:</strong> ${stats.speed >= 80 ? 'Speed' : 'HP'} + ${isPhysical ? 'Atk' : 'Sp.Atk'}</p>
+                    <p style="margin:5px 0; font-size:0.9rem;"><strong>Foco (EVs):</strong> ${stats.speed >= 80 ? 'Speed' : 'HP'} + ${isPhysical ? 'Atk' : 'Sp.Atk'}</p>
                 </div>
                 <div class="specs-box">
                     <span class="specs-title">📝 Anotações</span>
