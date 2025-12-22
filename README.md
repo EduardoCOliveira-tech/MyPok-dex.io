@@ -1,2 +1,2 @@
 # MyPokédex
-site:https://eduardocoliveira-tech.github.io/MyPok-dex.io/
+site: https://eduardocoliveira-tech.github.io/MyPok-dex.io/
