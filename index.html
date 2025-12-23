@@ -68,11 +68,11 @@
         .modal-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
         .modal-img { width: 100px; height: 100px; background: rgba(255,255,255,0.03); border-radius: 50%; padding: 10px; border: 1px solid var(--border); }
         
-        /* CORREÇÃO TIPOS */
+        /* CORREÇÃO DOS TIPOS: GAP E WRAP */
         .modal-types { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
         .type-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* CORREÇÃO STATUS */
+        /* CORREÇÃO DOS STATUS */
         .stat-row { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.85rem; }
         .stat-label { width: 90px; color: var(--text-sec); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
         .stat-val { width: 35px; text-align: right; font-weight: bold; margin-right: 10px; }
@@ -171,7 +171,7 @@
 </section>
 
 <script>
-    // ================= DADOS E CONFIGURAÇÃO =================
+    // ================= CONFIGURAÇÃO =================
     const regions = [
         { id: 'kanto_rb', name: 'Kanto (FR/LG)', api: 2, type: 'reg', versionGroup: 'firered-leafgreen' },
         { id: 'johto_gs', name: 'Johto (HG/SS)', api: 3, type: 'reg', versionGroup: 'heartgold-soulsilver' },
@@ -194,14 +194,20 @@
     const JOHTO_BASE = 'https://raw.githubusercontent.com/kelseyyoung/HGSSIronmonMap/main/public/images/maps/';
     const HOENN_BASE = 'https://raw.githubusercontent.com/kelseyyoung/EmeraldIronmonMap/main/public/images/maps/';
 
+    // --- LISTA COMPLETA DE MAPAS RESTAURADA ---
     const defaultMaps = {
         'default': { 'Mapa Mundi': 'https://upload.wikimedia.org/wikipedia/commons/8/80/World_Map_%28Pok%C3%A9mon%29.png' },
         'kanto_rb': {
             '00. Mapa Geral': 'https://upload.wikimedia.org/wikipedia/commons/5/53/Kanto_place_names.png',
             'Pallet Town': BASE_URL + 'Pallet%20Town.png', 'Viridian City': BASE_URL + 'Viridian%20City.png', 'Pewter City': BASE_URL + 'Pewter%20City.png', 'Cerulean City': BASE_URL + 'Cerulean%20City.png', 'Vermilion City': BASE_URL + 'Vermilion%20City.png', 'Lavender Town': BASE_URL + 'Lavender%20Town.png', 'Celadon City': BASE_URL + 'Celadon%20City.png', 'Fuchsia City': BASE_URL + 'Fuchsia%20City.png', 'Saffron City': BASE_URL + 'Saffron%20City.png', 'Cinnabar Island': BASE_URL + 'Cinnabar%20Island.png',
             'Rota 1': BASE_URL + 'Route%201.png', 'Rota 2': BASE_URL + 'Route%202.png', 'Rota 3': BASE_URL + 'Route%203.png', 'Rota 4': BASE_URL + 'Route%204.png', 'Rota 5': BASE_URL + 'Route%205.png', 'Rota 6': BASE_URL + 'Route%206.png', 'Rota 7': BASE_URL + 'Route%207.png', 'Rota 8': BASE_URL + 'Route%208.png', 'Rota 9': BASE_URL + 'Route%209.png', 'Rota 10': BASE_URL + 'Route%2010.png', 'Rota 11': BASE_URL + 'Route%2011.png', 'Rota 12': BASE_URL + 'Route%2012.png', 'Rota 13': BASE_URL + 'Route%2013.png', 'Rota 14': BASE_URL + 'Route%2014.png', 'Rota 15': BASE_URL + 'Route%2015.png', 'Rota 16': BASE_URL + 'Route%2016.png', 'Rota 17': BASE_URL + 'Route%2017.png', 'Rota 18': BASE_URL + 'Route%2018.png', 'Rota 19': BASE_URL + 'Route%2019.png', 'Rota 20': BASE_URL + 'Route%2020.png', 'Rota 21': BASE_URL + 'Route%2021.png', 'Rota 22': BASE_URL + 'Route%2022.png', 'Rota 23': BASE_URL + 'Route%2023.png', 'Rota 24': BASE_URL + 'Route%2024.png', 'Rota 25': BASE_URL + 'Route%2025.png',
-            'Viridian Forest': BASE_URL + 'Viridian%20Forest.png', 'Mt. Moon 1F': BASE_URL + 'Mt%20Moon%201F.png', 'Mt. Moon B1F': BASE_URL + 'Mt%20Moon%20B1F.png', 'Mt. Moon B2F': BASE_URL + 'Mt%20Moon%20B2F.png', 'Rock Tunnel 1F': BASE_URL + 'Rock%20Tunnel%201F.png', 'Rock Tunnel B1F': BASE_URL + 'Rock%20Tunnel%20B1F.png', 'Power Plant': BASE_URL + 'Power%20Plant.png', 'Pokemon Tower 3F': BASE_URL + 'Pokemon%20Tower%203F.png', 'Pokemon Tower 4F': BASE_URL + 'Pokemon%20Tower%204F.png', 'Pokemon Tower 5F': BASE_URL + 'Pokemon%20Tower%205F.png', 'Safari Center': BASE_URL + 'Safari%20Zone%20Center.png', 'Seafoam B3F': BASE_URL + 'Seafoam%20Islands%20B3F.png', 'Seafoam B4F': BASE_URL + 'Seafoam%20Islands%20B4F.png', 'Pokemon Mansion 1F': BASE_URL + 'Pokemon%20Mansion%201F.png', 'Victory Road 1F': BASE_URL + 'Victory%20Road%201F.png', 'Victory Road 2F': BASE_URL + 'Victory%20Road%202F.png', 'Victory Road 3F': BASE_URL + 'Victory%20Road%203F.png', 'Cerulean Cave 1F': BASE_URL + 'Cerulean%20Cave%201F.png',
-            'Silph Co 1F': BASE_URL + 'Silph%20Co%201F.png', 'Silph Co 2F': BASE_URL + 'Silph%20Co%202F.png', 'Silph Co 3F': BASE_URL + 'Silph%20Co%203F.png', 'Silph Co 4F': BASE_URL + 'Silph%20Co%204F.png', 'Silph Co 5F': BASE_URL + 'Silph%20Co%205F.png', 'Silph Co 6F': BASE_URL + 'Silph%20Co%206F.png', 'Silph Co 7F': BASE_URL + 'Silph%20Co%207F.png', 'Silph Co 8F': BASE_URL + 'Silph%20Co%208F.png', 'Silph Co 9F': BASE_URL + 'Silph%20Co%209F.png', 'Silph Co 10F': BASE_URL + 'Silph%20Co%2010F.png', 'Silph Co 11F': BASE_URL + 'Silph%20Co%2011F.png'
+            'Viridian Forest': BASE_URL + 'Viridian%20Forest.png', 'Mt. Moon 1F': BASE_URL + 'Mt%20Moon%201F.png', 'Mt. Moon B1F': BASE_URL + 'Mt%20Moon%20B1F.png', 'Mt. Moon B2F': BASE_URL + 'Mt%20Moon%20B2F.png', 'Rock Tunnel 1F': BASE_URL + 'Rock%20Tunnel%201F.png', 'Rock Tunnel B1F': BASE_URL + 'Rock%20Tunnel%20B1F.png', 'Power Plant': BASE_URL + 'Power%20Plant.png', 'Pokemon Tower 3F': BASE_URL + 'Pokemon%20Tower%203F.png', 'Pokemon Tower 4F': BASE_URL + 'Pokemon%20Tower%204F.png', 'Pokemon Tower 5F': BASE_URL + 'Pokemon%20Tower%205F.png', 'Pokemon Tower 6F': BASE_URL + 'Pokemon%20Tower%206F.png', 'Pokemon Tower 7F': BASE_URL + 'Pokemon%20Tower%207F.png',
+            'Safari Center': BASE_URL + 'Safari%20Zone%20Center.png', 'Safari East': BASE_URL + 'Safari%20Zone%20Area%201.png', 'Safari North': BASE_URL + 'Safari%20Zone%20Area%202.png', 'Safari West': BASE_URL + 'Safari%20Zone%20Area%203.png',
+            'Seafoam B1F': BASE_URL + 'Seafoam%20Islands%20B1F.png', 'Seafoam B2F': BASE_URL + 'Seafoam%20Islands%20B2F.png', 'Seafoam B3F': BASE_URL + 'Seafoam%20Islands%20B3F.png', 'Seafoam B4F': BASE_URL + 'Seafoam%20Islands%20B4F.png',
+            'Pokemon Mansion 1F': BASE_URL + 'Pokemon%20Mansion%201F.png', 'Pokemon Mansion 2F': BASE_URL + 'Pokemon%20Mansion%202F.png', 'Pokemon Mansion 3F': BASE_URL + 'Pokemon%20Mansion%203F.png', 'Pokemon Mansion B1F': BASE_URL + 'Pokemon%20Mansion%20B1F.png',
+            'Victory Road 1F': BASE_URL + 'Victory%20Road%201F.png', 'Victory Road 2F': BASE_URL + 'Victory%20Road%202F.png', 'Victory Road 3F': BASE_URL + 'Victory%20Road%203F.png', 'Cerulean Cave 1F': BASE_URL + 'Cerulean%20Cave%201F.png', 'Cerulean Cave 2F': BASE_URL + 'Cerulean%20Cave%202F.png', 'Cerulean Cave B1F': BASE_URL + 'Cerulean%20Cave%20B1F.png',
+            'Silph Co 1F': BASE_URL + 'Silph%20Co%201F.png', 'Silph Co 2F': BASE_URL + 'Silph%20Co%202F.png', 'Silph Co 3F': BASE_URL + 'Silph%20Co%203F.png', 'Silph Co 4F': BASE_URL + 'Silph%20Co%204F.png', 'Silph Co 5F': BASE_URL + 'Silph%20Co%205F.png', 'Silph Co 6F': BASE_URL + 'Silph%20Co%206F.png', 'Silph Co 7F': BASE_URL + 'Silph%20Co%207F.png', 'Silph Co 8F': BASE_URL + 'Silph%20Co%208F.png', 'Silph Co 9F': BASE_URL + 'Silph%20Co%209F.png', 'Silph Co 10F': BASE_URL + 'Silph%20Co%2010F.png', 'Silph Co 11F': BASE_URL + 'Silph%20Co%2011F.png',
+            'Rocket Hideout B1F': BASE_URL + 'Rocket%20Hideout%20B1F.png', 'Rocket Hideout B2F': BASE_URL + 'Rocket%20Hideout%20B2F.png', 'Rocket Hideout B3F': BASE_URL + 'Rocket%20Hideout%20B3F.png', 'Rocket Hideout B4F': BASE_URL + 'Rocket%20Hideout%20B4F.png'
         },
         'johto_gs': {
             '00. Mapa Geral': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/JohtoMap.png/800px-JohtoMap.png',
@@ -346,7 +352,7 @@
         document.getElementById('stats').innerText = `${c} / ${t} (${p}%)`;
     }
 
-    // ================= DETALHES COMPLETOS (BLINDADO) =================
+    // ================= DETALHES COMPLETOS (CORRIGIDO) =================
     const typeColors = { normal:'#A8A77A', fire:'#EE8130', water:'#6390F0', electric:'#F7D02C', grass:'#7AC74C', ice:'#96D9D6', fighting:'#C22E28', poison:'#A33EA1', ground:'#E2BF65', flying:'#A98FF3', psychic:'#F95587', bug:'#A6B91A', rock:'#B6A136', ghost:'#735797', dragon:'#6F35FC', dark:'#705746', steel:'#B7B7CE', fairy:'#D685AD' };
 
     async function openPokemonDetails(id) {
@@ -371,39 +377,38 @@
             const evoCap = getEvolutionLevel(evoData.chain, data.name) || 100;
             const evoText = evoCap === 100 ? "Forma Final" : `Evolui no lvl ${evoCap}`;
 
-            // Tipos
-            let typesHtml = data.types.map(t => `<span class="type-badge" style="background:${typeColors[t.type.name] || '#777'}">${t.type.name}</span>`).join('');
+            // UNIFICAR RENDERIZAÇÃO
+            const processed = {
+                id: data.id,
+                name: data.name,
+                img: data.sprites.other['official-artwork'].front_default,
+                types: data.types.map(t => t.type.name),
+                // Converte stats array para objeto para facilitar
+                stats: data.stats.reduce((acc, s) => ({ ...acc, [s.stat.name]: s.base_stat }), {}),
+                evoText: evoText
+            };
 
-            // Stats
-            let statsHtml = data.stats.map(s => {
-                const val = s.base_stat;
-                const width = Math.min(100, (val / 255) * 100); 
-                return `<div class="stat-row"><span class="stat-label">${s.stat.name.replace('special-','sp.')}</span><span class="stat-val">${val}</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${width}%"></div></div></div>`;
+            // HTML GEN: Tipos
+            let typesHtml = processed.types.map(t => `<span class="type-badge" style="background:${typeColors[t] || '#777'}">${t}</span>`).join('');
+
+            // HTML GEN: Stats (Ordem Fixa)
+            const statOrder = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
+            let statsHtml = statOrder.map(key => {
+                const val = processed.stats[key] || 0;
+                const width = Math.min(100, (val / 255) * 100);
+                return `<div class="stat-row"><span class="stat-label">${key.replace('special-', 'sp.')}</span><span class="stat-val">${val}</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${width}%"></div></div></div>`;
             }).join('');
 
-            // --- LÓGICA DE MOVIMENTOS ---
-            // Se o jogo é antigo e o pokemon é novo, ou vice-versa, usamos fallback
-            let moveSet = data.moves;
-            let useVersion = null;
+            // --- MOVES LOGIC (CRASH FIX: "reading '4'") ---
+            const versionMoves = data.moves.filter(m => targetVersion ? m.version_group_details.some(v => v.version_group.name === targetVersion) : true);
+            const movesSource = versionMoves.length > 0 ? versionMoves : data.moves;
+            const versionToUse = versionMoves.length > 0 ? targetVersion : null;
 
-            // Tenta encontrar movimentos da versão especifica
-            if (targetVersion) {
-                const specific = data.moves.filter(m => m.version_group_details.some(v => v.version_group.name === targetVersion));
-                if (specific.length > 0) {
-                    moveSet = specific;
-                    useVersion = targetVersion;
-                }
-            }
+            let naturalMoves = movesSource.map(m => {
+                let detail = null;
+                if (versionToUse) detail = m.version_group_details.find(v => v.version_group.name === versionToUse);
+                else detail = m.version_group_details[m.version_group_details.length-1];
 
-            // Filtro Natural
-            let naturalMoves = moveSet.map(m => {
-                // Pega o detalhe da versão escolhida ou o ultimo disponivel
-                let details = m.version_group_details;
-                if (useVersion) details = details.filter(d => d.version_group.name === useVersion);
-                
-                // Pega o ultimo registro válido (geralmente o nivel mais alto ou aprendizado mais recente)
-                const detail = details.length > 0 ? details[details.length - 1] : null;
-                
                 if (!detail) return null;
                 return { name: m.move.name, method: detail.move_learn_method.name, lvl: detail.level_learned_at };
             })
@@ -411,73 +416,69 @@
             .sort((a,b) => a.lvl - b.lvl)
             .slice(-6);
 
-            // Filtro TMs
-            let machineMoves = moveSet.map(m => {
-                let details = m.version_group_details;
-                if (useVersion) details = details.filter(d => d.version_group.name === useVersion);
-                const detail = details.length > 0 ? details[0] : null;
-                
+            let machineMoves = movesSource.map(m => {
+                 let detail = null;
+                if (versionToUse) detail = m.version_group_details.find(v => v.version_group.name === versionToUse);
+                else detail = m.version_group_details[m.version_group_details.length-1];
                 if (!detail) return null;
                 return { name: m.move.name, method: detail.move_learn_method.name };
             }).filter(m => m && m.method === 'machine');
 
-            // --- BUILD SUGGESTION ---
-            let potentialMoves = [];
-            data.types.forEach(t => {
-                const best = strongMoves[t.type.name] || [];
-                potentialMoves.push(...naturalMoves.filter(m => best.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
-                potentialMoves.push(...machineMoves.filter(m => best.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
+            // BUILD SUGGESTION
+            let finalBuild = [];
+            processed.types.forEach(t => {
+                const best = strongMoves[t] || [];
+                finalBuild.push(...naturalMoves.filter(m => best.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
+                finalBuild.push(...machineMoves.filter(m => best.includes(m.name)).map(m => ({name: m.name, type: 'stab'})));
             });
 
-            ['normal', 'ground', 'rock', 'flying', 'fighting', 'ice', 'electric'].forEach(ct => {
-                if(!data.types.some(t => t.type.name === ct)) {
+            // Cobertura
+             ['normal', 'ground', 'rock', 'flying', 'fighting', 'ice', 'electric'].forEach(ct => {
+                if(!processed.types.includes(ct)) {
                     const covers = strongMoves[ct] || [];
-                    potentialMoves.push(...machineMoves.filter(m => covers.includes(m.name)).map(m => ({name: m.name, type: 'cover'})));
+                    finalBuild.push(...machineMoves.filter(m => covers.includes(m.name)).map(m => ({name: m.name, type: 'cover'})));
                 }
             });
 
-            // Remove duplicatas
-            potentialMoves = potentialMoves.filter((v,i,a)=>a.findIndex(t=>(t.name === v.name))===i);
-
-            // Build Final (Top 4)
-            let finalBuild = potentialMoves.filter(m => m.type === 'stab').slice(0, 2);
-            finalBuild.push(...potentialMoves.filter(m => m.type === 'cover').slice(0, 4 - finalBuild.length));
+            // Unique and Slice Safe
+            finalBuild = finalBuild.filter((v,i,a)=>a.findIndex(x=>(x.name === v.name))===i).slice(0, 4);
             
-            // Preenche se faltar (Corrigido para evitar erro de slice negativo)
+            // Fill holes
             if(finalBuild.length < 4) {
-                const slotsNeeded = 4 - finalBuild.length;
-                const fillers = naturalMoves.sort((a,b) => b.lvl - a.lvl).slice(0, slotsNeeded).map(m => ({name: m.name, type: 'stab'}));
+                const fillers = naturalMoves.sort((a,b) => b.lvl - a.lvl).slice(0, 4); // Take top 4 naturals
                 fillers.forEach(f => {
-                    if(!finalBuild.some(fb => fb.name === f.name)) finalBuild.push(f);
+                    if(finalBuild.length < 4 && !finalBuild.some(fb => fb.name === f.name)) {
+                         finalBuild.push({name: f.name, type: 'stab'});
+                    }
                 });
             }
 
             let movesetHtml = finalBuild.map(m => `<div class="build-slot ${m.type}">${m.name.replace(/-/g, ' ')}</div>`).join('');
             let naturalHtml = naturalMoves.map(m => `<span class="move-tag natural">${m.name.replace(/-/g, ' ')} <span class="level-info">Lv.${m.lvl}</span></span>`).join('');
-            let displayTms = machineMoves.filter(m => Object.values(strongMoves).flat().includes(m.name)).slice(0, 8).map(m => `<span class="move-tag tm">${m.name.replace(/-/g, ' ')} <span class="level-info">TM</span></span>`).join('');
+            let displayTms = machineMoves.slice(0, 8).map(m => `<span class="move-tag tm">${m.name.replace(/-/g, ' ')} <span class="level-info">TM</span></span>`).join('');
 
-            const stats = {}; data.stats.forEach(s => stats[s.stat.name] = s.base_stat);
-            let isPhysical = stats.attack >= stats['special-attack'];
-            let natureText = stats.speed >= 100 ? (isPhysical ? "Jolly" : "Timid") : (isPhysical ? "Adamant" : "Modest");
+            // Natureza
+            let isPhysical = processed.stats.attack >= processed.stats['special-attack'];
+            let natureText = processed.stats.speed >= 100 ? (isPhysical ? "Jolly" : "Timid") : (isPhysical ? "Adamant" : "Modest");
 
             const notes = db.notes[id] || "";
 
             body.innerHTML = `
                 <div class="modal-header">
-                    <img src="${data.sprites.other['official-artwork'].front_default}" class="modal-img">
+                    <img src="${processed.img}" class="modal-img">
                     <div class="modal-title">
-                        <h2>${data.name}</h2>
+                        <h2>${processed.name}</h2>
                         <div class="modal-types">${typesHtml} <span style="font-size:0.8rem; color:#aaa; margin-left:10px;">(${evoText})</span></div>
                     </div>
                 </div>
                 <div style="margin-bottom:15px;">${statsHtml}</div>
                 <div class="specs-box" style="margin-top:0;">
                     <span class="specs-title">🏆 Build Recomendada</span>
-                    <div class="build-grid">${movesetHtml || '<span style="color:#777; font-size:0.8rem;">Sem dados suficientes.</span>'}</div>
+                    <div class="build-grid">${movesetHtml || '<span style="color:#777; font-size:0.8rem;">Sem dados.</span>'}</div>
                 </div>
                 <div class="specs-box">
                     <span class="specs-title" style="color:#4caf50;">🍃 Naturais (Até lvl ${evoCap})</span>
-                    <div class="move-grid">${naturalHtml || '<span style="color:#777; font-size:0.8rem;">Iniciais básicos.</span>'}</div>
+                    <div class="move-grid">${naturalHtml || '<span style="color:#777; font-size:0.8rem;">Iniciais.</span>'}</div>
                     <div style="height:5px;"></div>
                     <span class="specs-title" style="color:var(--tm-color);">💿 TMs Disponíveis</span>
                     <div class="move-grid">${displayTms || '<span style="color:#777; font-size:0.8rem;">Nenhum relevante.</span>'}</div>
@@ -485,7 +486,7 @@
                 <div class="specs-box">
                     <span class="specs-title">⚡ Sugestão de Treino</span>
                     <p style="margin:5px 0; font-size:0.9rem;"><strong>Natureza:</strong> ${natureText}</p>
-                    <p style="margin:5px 0; font-size:0.9rem;"><strong>Foco (EVs):</strong> ${stats.speed >= 80 ? 'Speed' : 'HP'} + ${isPhysical ? 'Atk' : 'Sp.Atk'}</p>
+                    <p style="margin:5px 0; font-size:0.9rem;"><strong>Foco:</strong> ${processed.stats.speed >= 80 ? 'Speed' : 'HP'} + ${isPhysical ? 'Atk' : 'Sp.Atk'}</p>
                 </div>
                 <div class="specs-box">
                     <span class="specs-title">📝 Anotações</span>
@@ -493,7 +494,7 @@
                     <button class="btn" style="width:100%; margin-top:5px; background:var(--accent);" onclick="saveNote(${id})">Salvar</button>
                 </div>
             `;
-        } catch (err) { console.error(err); body.innerHTML = `<p style="color:#ef4444; font-weight:bold;">Erro ao carregar dados.</p><p style="font-size:0.8rem; color:#aaa;">Detalhe técnico: ${err.message}</p>`; }
+        } catch (err) { console.error(err); body.innerHTML = `<p style="color:#ef4444; font-weight:bold;">Erro.</p><p style="font-size:0.8rem;">${err.message}</p>`; }
     }
 
     function getEvolutionLevel(chain, currentName) {
